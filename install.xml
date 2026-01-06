@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name><![CDATA[<b>Автоматическое добавление SEO URL</b>]]></name>
+	<code>auto_seo_url</code>
+	<version>1.0</version>
+	<author>&lt;a target="blank" href=&quot;//vshkov.ru/&quot; &gt;&lt;i&gt;vshkov.ru&lt;/i&gt;&lt;/a&gt;</author>
+	<link>https://vshkov.ru/</link>
+
+	<file path="admin/model/catalog/product.php">
+		<operation>
+			<search index="0"><![CDATA[if (isset($data['product_seo_url'])) {]]></search>
+			<add position="before"><![CDATA[
+		if (!function_exists('string_translit') && file_exists(DIR_SYSTEM . 'helper/string.php')) {
+			require_once(DIR_SYSTEM . 'helper/string.php');
+		}
+		if (function_exists('string_translit') && !empty($data['product_description'])) {
+			if (!isset($data['product_seo_url']) || !is_array($data['product_seo_url'])) {
+				$data['product_seo_url'] = array();
+			}
+			$stores = array(0);
+			if (isset($data['product_store']) && is_array($data['product_store']) && $data['product_store']) {
+				$stores = $data['product_store'];
+			}
+			foreach ($stores as $store_id) {
+				foreach ($data['product_description'] as $language_id => $value) {
+					if (!empty($value['name']) && empty($data['product_seo_url'][$store_id][$language_id])) {
+						$data['product_seo_url'][$store_id][$language_id] = string_translit($value['name']);
+					}
+				}
+			}
+		}
+]]></add>
+		</operation>
+
+		<operation>
+			<search index="0"><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "seo_url WHERE query = 'product_id=" . (int)$product_id . "'");]]></search>
+			<add position="before"><![CDATA[
+		if (!function_exists('string_translit') && file_exists(DIR_SYSTEM . 'helper/string.php')) {
+			require_once(DIR_SYSTEM . 'helper/string.php');
+		}
+		if (function_exists('string_translit') && !empty($data['product_description'])) {
+			if (!isset($data['product_seo_url']) || !is_array($data['product_seo_url'])) {
+				$data['product_seo_url'] = array();
+			}
+			$stores = array(0);
+			if (isset($data['product_store']) && is_array($data['product_store']) && $data['product_store']) {
+				$stores = $data['product_store'];
+			} else {
+				$query_store = $this->db->query("SELECT store_id FROM " . DB_PREFIX . "product_to_store WHERE product_id = '" . (int)$product_id . "'");
+				if ($query_store->num_rows) {
+					$stores = array();
+					foreach ($query_store->rows as $row_store) {
+						$stores[] = (int)$row_store['store_id'];
+					}
+				}
+			}
+			foreach ($stores as $store_id) {
+				foreach ($data['product_description'] as $language_id => $value) {
+					if (!empty($value['name']) && empty($data['product_seo_url'][$store_id][$language_id])) {
+						$data['product_seo_url'][$store_id][$language_id] = string_translit($value['name']);
+					}
+				}
+			}
+		}
+]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/model/catalog/category.php">
+		<operation>
+			<search index="0"><![CDATA[if (isset($data['category_seo_url'])) {]]></search>
+			<add position="before"><![CDATA[
+		if (!function_exists('string_translit') && file_exists(DIR_SYSTEM . 'helper/string.php')) {
+			require_once(DIR_SYSTEM . 'helper/string.php');
+		}
+		if (function_exists('string_translit') && !empty($data['category_description'])) {
+			if (!isset($data['category_seo_url']) || !is_array($data['category_seo_url'])) {
+				$data['category_seo_url'] = array();
+			}
+			$stores = array(0);
+			if (isset($data['category_store']) && is_array($data['category_store']) && $data['category_store']) {
+				$stores = $data['category_store'];
+			}
+			foreach ($stores as $store_id) {
+				foreach ($data['category_description'] as $language_id => $value) {
+					if (!empty($value['name']) && empty($data['category_seo_url'][$store_id][$language_id])) {
+						$data['category_seo_url'][$store_id][$language_id] = string_translit($value['name']);
+					}
+				}
+			}
+		}
+]]></add>
+		</operation>
+
+		<operation>
+			<search index="0"><![CDATA[$this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url` WHERE query = 'category_id=" . (int)$category_id . "'");]]></search>
+			<add position="before"><![CDATA[
+		if (!function_exists('string_translit') && file_exists(DIR_SYSTEM . 'helper/string.php')) {
+			require_once(DIR_SYSTEM . 'helper/string.php');
+		}
+		if (function_exists('string_translit') && !empty($data['category_description'])) {
+			if (!isset($data['category_seo_url']) || !is_array($data['category_seo_url'])) {
+				$data['category_seo_url'] = array();
+			}
+			$stores = array(0);
+			if (isset($data['category_store']) && is_array($data['category_store']) && $data['category_store']) {
+				$stores = $data['category_store'];
+			} else {
+				$query_store = $this->db->query("SELECT store_id FROM " . DB_PREFIX . "category_to_store WHERE category_id = '" . (int)$category_id . "'");
+				if ($query_store->num_rows) {
+					$stores = array();
+					foreach ($query_store->rows as $row_store) {
+						$stores[] = (int)$row_store['store_id'];
+					}
+				}
+			}
+			foreach ($stores as $store_id) {
+				foreach ($data['category_description'] as $language_id => $value) {
+					if (!empty($value['name']) && empty($data['category_seo_url'][$store_id][$language_id])) {
+						$data['category_seo_url'][$store_id][$language_id] = string_translit($value['name']);
+					}
+				}
+			}
+		}
+]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/controller/catalog/product.php">
+		<operation>
+			<search><![CDATA[if ($this->request->post['product_seo_url']) {]]></search>
+			<add position="before"><![CDATA[
+        if (!empty($this->request->post['product_description'])) {
+            if (!function_exists('string_translit') && file_exists(DIR_SYSTEM . 'helper/string.php')) {
+                require_once(DIR_SYSTEM . 'helper/string.php');
+            }
+            if (!isset($this->request->post['product_seo_url']) || !is_array($this->request->post['product_seo_url'])) {
+                $this->request->post['product_seo_url'] = array();
+            }
+            $stores = array(0);
+            if (!empty($this->request->post['product_store']) && is_array($this->request->post['product_store'])) {
+                $stores = $this->request->post['product_store'];
+            }
+            foreach ($stores as $store_id) {
+                foreach ($this->request->post['product_description'] as $language_id => $value) {
+                    if (empty($this->request->post['product_seo_url'][$store_id][$language_id]) && !empty($value['name']) && function_exists('string_translit')) {
+                        $this->request->post['product_seo_url'][$store_id][$language_id] = string_translit($value['name']);
+                    }
+                }
+            }
+        }
+]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/controller/catalog/category.php">
+		<operation>
+			<search><![CDATA[if ($this->request->post['category_seo_url']) {]]></search>
+			<add position="before"><![CDATA[
+        if (!empty($this->request->post['category_description'])) {
+            if (!function_exists('string_translit') && file_exists(DIR_SYSTEM . 'helper/string.php')) {
+                require_once(DIR_SYSTEM . 'helper/string.php');
+            }
+            if (!isset($this->request->post['category_seo_url']) || !is_array($this->request->post['category_seo_url'])) {
+                $this->request->post['category_seo_url'] = array();
+            }
+            $stores = array(0);
+            if (!empty($this->request->post['category_store']) && is_array($this->request->post['category_store'])) {
+                $stores = $this->request->post['category_store'];
+            }
+            foreach ($stores as $store_id) {
+                foreach ($this->request->post['category_description'] as $language_id => $value) {
+                    if (empty($this->request->post['category_seo_url'][$store_id][$language_id]) && !empty($value['name']) && function_exists('string_translit')) {
+                        $this->request->post['category_seo_url'][$store_id][$language_id] = string_translit($value['name']);
+                    }
+                }
+            }
+        }
+]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/controller/common/column_left.php">
+		<operation>
+			<search>
+				<![CDATA[ if ($this->user->hasPermission('access', 'tool/upload')) { ]]>
+			</search>
+			<add position="before">
+				<![CDATA[
+				if ($this->user->hasPermission('access', 'extension/auto_seo_url')) {
+    				$maintenance[] = array(
+        				'name' => $this->language->get('text_auto_seo_url'),
+        				'href' => $this->url->link('extension/auto_seo_url', 'user_token=' . $this->session->data['user_token'], true),
+        				'children' => array()
+    				);
+				}]]>
+			</add>
+		</operation>
+	</file>
+	
+	<file path="admin/language/*/common/column_left.php">
+		<operation>
+			<search>
+				<![CDATA[ $_['text_backup'] ]]>
+			</search>
+			<add position="after">
+				<![CDATA[ $_['text_auto_seo_url'] = 'Генерация SEO URL'; ]]>
+			</add>
+		</operation>
+	</file>
+
+</modification>
